@@ -1,4 +1,4 @@
-import boto3
+import boto3  # sudo pip install boto3
 import MFRC522
 import RPi.GPIO as GPIO
 import time
