@@ -6,7 +6,7 @@ import datetime
 
 dynamodb = boto3.resource('dynamodb')
 
-tag_table = dynamodb.Table('tag')
+log = dynamodb.Table('log')
 
 reader_module = MFRC522.MFRC522()
 
@@ -27,9 +27,9 @@ def tag_reader():
 
 def save_tag(uid):
     timestamp = str(datetime.datetime.now())
-    tag_table.put_item(
+    log.put_item(
         Item={
-            'id': uid,
+            'tag_uid': uid,
             'timestamp': timestamp,
             'local': 'CBSI'
         }
