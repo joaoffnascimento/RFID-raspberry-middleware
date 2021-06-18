@@ -2,7 +2,7 @@ import boto3
 
 dynamodb = boto3.resource('dynamodb')
 
-table = dynamodb.Table('tags')
+table = dynamodb.Table('tag')
 
 tags = {
     '2171081757193': 'joao',
