@@ -4,6 +4,7 @@ import RPi.GPIO as GPIO
 import time
 import datetime
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
+from decouple import config #pip install python-decouple
 
 dynamodb = boto3.resource('dynamodb')
 
