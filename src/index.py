@@ -14,7 +14,10 @@ topic = "/home/tag-touch-events"
 aws_access_key_id = config('aws_access_key_id')
 aws_secret_access_key = config('aws_secret_access_key')
 
+client = boto3.client('dynamodb', aws_access_key_id, aws_secret_access_key)
+
 dynamodb = boto3.resource('dynamodb', aws_access_key_id, aws_secret_access_key)
+
 log = dynamodb.Table('log')
 
 myMQTTClient = AWSIoTMQTTClient("RaspberryIotId")
