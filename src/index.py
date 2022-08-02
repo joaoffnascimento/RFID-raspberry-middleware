@@ -14,15 +14,15 @@ reader_module = MFRC522.MFRC522()
 
 endpoint = config('AWS_IOT_ENDPOINT')
 
-amazonRootCertificatePath = config('AMAZON_ROOT_CERTIFICATE_PATH')
-privateKeyPath = config('PRIVATE_KEY_PATH')
-certificatePath = config('CERTIFICATE_PATH')
 readerLocal = config('READER_LOCAL')
-topic = config('MQTT_TOPIC')
+
+topic = "/home/tag-touch-events"
 
 myMQTTClient = AWSIoTMQTTClient("RaspberryIotId")
 myMQTTClient.configureEndpoint(endpoint, 8883)
-myMQTTClient.configureCredentials(amazonRootCertificatePath, privateKeyPath, certificatePath)
+myMQTTClient.configureCredentials("/home/pi/aws-credentials/AmazonRootCA1.pem",
+                                  "/home/pi/aws-credentials/private.pem.key",
+                                  "/home/pi/aws-credentials/certificate.pem.crt")
 
 myMQTTClient.configureOfflinePublishQueueing(-1)  # Infinite offline Publish queueing
 myMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
