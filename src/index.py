@@ -6,17 +6,16 @@ import datetime
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 from decouple import config #pip install python-decouple
 
-dynamodb = boto3.resource('dynamodb')
-
-log = dynamodb.Table('log')
-
 reader_module = MFRC522.MFRC522()
 
 endpoint = config('AWS_IOT_ENDPOINT')
-
 readerLocal = config('READER_LOCAL')
-
 topic = "/home/tag-touch-events"
+aws_access_key_id = config('aws_access_key_id')
+aws_secret_access_key = config('aws_secret_access_key')
+
+dynamodb = boto3.resource('dynamodb', aws_access_key_id, aws_secret_access_key)
+log = dynamodb.Table('log')
 
 myMQTTClient = AWSIoTMQTTClient("RaspberryIotId")
 myMQTTClient.configureEndpoint(endpoint, 8883)
