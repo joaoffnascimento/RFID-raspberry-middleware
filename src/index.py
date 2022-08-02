@@ -1,4 +1,3 @@
-import boto3
 import MFRC522
 import RPi.GPIO as GPIO
 import time
@@ -11,14 +10,6 @@ reader_module = MFRC522.MFRC522()
 endpoint = config('AWS_IOT_ENDPOINT')
 readerLocal = config('READER_LOCAL')
 topic = "/home/tag-touch-events"
-aws_access_key_id = config('aws_access_key_id')
-aws_secret_access_key = config('aws_secret_access_key')
-
-client = boto3.client('dynamodb', aws_access_key_id, aws_secret_access_key)
-
-dynamodb = boto3.resource('dynamodb', aws_access_key_id, aws_secret_access_key)
-
-log = dynamodb.Table('log')
 
 myMQTTClient = AWSIoTMQTTClient("RaspberryIotId")
 myMQTTClient.configureEndpoint(endpoint, 8883)
@@ -53,17 +44,6 @@ def tag_reader():
     return uid
 
 
-def save_tag_log(uid, timestamp):
-    log.put_item(
-        Item={
-            'tag_uid': uid,
-            'timestamp': timestamp,
-            'local': readerLocal
-        }
-    )
-    print('Saved TAG read log!')
-
-
 def publish_event(uid, timestamp, local):
     print("Publishing MQTT Message from RaspberryPI on topic " + topic)
     myMQTTClient.publish(
@@ -76,7 +56,6 @@ def publish_event(uid, timestamp, local):
 def main():
     while True:
         uid = tag_reader()
-        save_tag_log(uid, str(datetime.datetime.now()))
         publish_event(uid, str(datetime.datetime.now()), readerLocal)
         time.sleep(.5)
 
