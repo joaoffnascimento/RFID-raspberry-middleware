@@ -27,12 +27,13 @@ myMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
 myMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
 myMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
-print('Starting Realtime Data Transfer From Raspberry Pi...')
+print('STARTING REALTIME DATA TRANSFER FROM RASPBERRY PI...')
+print('----------------------------------------------------')
 
 myMQTTClient.connect()
 
-print('Connected to topic: ' + topic)
-print('The reader is set up on site: : ' + readerLocal)
+print('CONNECTED TO TOPIC: ' + topic)
+print('THE READER IS SET UP ON SITE: : ' + readerLocal)
 
 
 def tag_reader():
@@ -45,13 +46,14 @@ def tag_reader():
         if status == reader_module.MI_OK:
             (status, uid) = reader_module.MFRC522_Anticoll()
             uid = ''.join(str(reg) for reg in uid)
-            print('TAG Detected : ', uid)
+            print('----------------------------------------------------')
+            print('TAG Detected : { tagUid:', uid, ' }')
             break
     return uid
 
 
 def publish_event(uid, timestamp, local):
-    print('Publishing MQTT Message from RaspberryPI on topic ' + topic)
+    print('PUBLISHING EVENT TO ' + topic)
     myMQTTClient.publish(
         topic,
         QoS=1,
@@ -78,7 +80,8 @@ def save_tag_touch_event(uid, timestamp):
 
     mongoRepository.insert_one(tag_touch_event)
 
-    print('Tag Touch Event Saved!')
+    print('TAG TOUCH EVENT SAVED: { tagUid:',
+          uid, ': timestamp: ', timestamp, ' }')
 
 
 def main():
