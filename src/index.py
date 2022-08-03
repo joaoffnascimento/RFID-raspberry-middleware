@@ -3,7 +3,7 @@ import RPi.GPIO as GPIO
 import time
 import datetime
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
-from decouple import config #pip install python-decouple
+from decouple import config  # pip install python-decouple
 from pymongo import MongoClient
 import pymongo
 
@@ -12,7 +12,7 @@ reader_module = MFRC522.MFRC522()
 endpoint = config('AWS_IOT_ENDPOINT')
 readerLocal = config('READER_LOCAL')
 topic = 'home/tag-touch-events'
-mongo_url = config('MONGO_URL')
+mongo_uri = config('MONGO_URI')
 mongo_database = 'rfid'
 
 myMQTTClient = AWSIoTMQTTClient('RaspberryIotId')
@@ -21,7 +21,8 @@ myMQTTClient.configureCredentials('/home/pi/aws-credentials/AmazonRootCA1.pem',
                                   '/home/pi/aws-credentials/private.pem.key',
                                   '/home/pi/aws-credentials/certificate.pem.crt')
 
-myMQTTClient.configureOfflinePublishQueueing(-1)  # Infinite offline Publish queueing
+# Infinite offline Publish queueing
+myMQTTClient.configureOfflinePublishQueueing(-1)
 myMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
 myMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
 myMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
@@ -37,7 +38,8 @@ print('The reader is set up on site: : ' + readerLocal)
 def tag_reader():
     while True:
         # Checks for TAG on the reader
-        (status, TagType) = reader_module.MFRC522_Request(reader_module.PICC_REQIDL)
+        (status, TagType) = reader_module.MFRC522_Request(
+            reader_module.PICC_REQIDL)
 
         # TAG reading
         if status == reader_module.MI_OK:
@@ -53,12 +55,14 @@ def publish_event(uid, timestamp, local):
     myMQTTClient.publish(
         topic,
         QoS=1,
-        payload='{"tag_uid":"' + str(uid) + '", "timestamp":"' + timestamp + '", "local":"' + local + '"}'
+        payload='{"tag_uid":"' + str(uid) + '", "timestamp":"' +
+        timestamp + '", "local":"' + local + '"}'
     )
 
+
 def get_connection():
-    client = MongoClient(mongo_url)
-    
+    client = MongoClient(mongo_uri)
+
     return client[mongo_database]
 
 
@@ -89,4 +93,3 @@ try:
     main()
 except KeyboardInterrupt:
     GPIO.cleanup()
-
