@@ -43,9 +43,9 @@ def tag_reader():
 
         # TAG reading
         if status == reader_module.MI_OK:
-            print('TAG Detected!')
             (status, uid) = reader_module.MFRC522_Anticoll()
             uid = ''.join(str(reg) for reg in uid)
+            print('TAG Detected : ', uid)
             break
     return uid
 
