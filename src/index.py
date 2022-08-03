@@ -9,7 +9,7 @@ reader_module = MFRC522.MFRC522()
 
 endpoint = config('AWS_IOT_ENDPOINT')
 readerLocal = config('READER_LOCAL')
-topic = "/home/tag-touch-events"
+topic = "home/tag-touch-events"
 
 myMQTTClient = AWSIoTMQTTClient("RaspberryIotId")
 myMQTTClient.configureEndpoint(endpoint, 8883)
