@@ -55,7 +55,7 @@ def publish_event(uid, timestamp, local):
     myMQTTClient.publish(
         topic,
         QoS=1,
-        payload='{"tag_uid":"' + str(uid) + '", "timestamp":"' +
+        payload='{"tagUid":"' + str(uid) + '", "timestamp":"' +
         timestamp + '", "local":"' + local + '"}'
     )
 
@@ -71,7 +71,7 @@ def save_tag_touch_event(uid, timestamp):
     mongoRepository = mongoConnection["tagTouchEvents"]
 
     tag_touch_event = {
-        'tag_uid': uid,
+        'tagUid': uid,
         'timestamp': timestamp,
         'local': readerLocal
     }
