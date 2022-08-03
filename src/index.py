@@ -5,6 +5,7 @@ import datetime
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 from decouple import config #pip install python-decouple
 from pymongo import MongoClient
+import pymongo
 
 reader_module = MFRC522.MFRC522()
 
@@ -57,6 +58,7 @@ def publish_event(uid, timestamp, local):
 
 def get_connection():
     client = MongoClient(mongo_url)
+    
     return client[mongo_database]
 
 
