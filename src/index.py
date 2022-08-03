@@ -4,18 +4,21 @@ import time
 import datetime
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 from decouple import config #pip install python-decouple
+from pymongo import MongoClient
 
 reader_module = MFRC522.MFRC522()
 
 endpoint = config('AWS_IOT_ENDPOINT')
 readerLocal = config('READER_LOCAL')
-topic = "home/tag-touch-events"
+topic = 'home/tag-touch-events'
+mongo_url = config('MONGO_URL')
+mongo_database = 'rfid'
 
-myMQTTClient = AWSIoTMQTTClient("RaspberryIotId")
+myMQTTClient = AWSIoTMQTTClient('RaspberryIotId')
 myMQTTClient.configureEndpoint(endpoint, 8883)
-myMQTTClient.configureCredentials("/home/pi/aws-credentials/AmazonRootCA1.pem",
-                                  "/home/pi/aws-credentials/private.pem.key",
-                                  "/home/pi/aws-credentials/certificate.pem.crt")
+myMQTTClient.configureCredentials('/home/pi/aws-credentials/AmazonRootCA1.pem',
+                                  '/home/pi/aws-credentials/private.pem.key',
+                                  '/home/pi/aws-credentials/certificate.pem.crt')
 
 myMQTTClient.configureOfflinePublishQueueing(-1)  # Infinite offline Publish queueing
 myMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
@@ -45,18 +48,38 @@ def tag_reader():
 
 
 def publish_event(uid, timestamp, local):
-    print("Publishing MQTT Message from RaspberryPI on topic " + topic)
+    print('Publishing MQTT Message from RaspberryPI on topic ' + topic)
     myMQTTClient.publish(
         topic,
         QoS=1,
         payload='{"tag_uid":"' + str(uid) + '", "timestamp":"' + timestamp + '", "local":"' + local + '"}'
     )
 
+def get_connection():
+    client = MongoClient(mongo_url)
+    return client[mongo_database]
+
+
+def save_tag_touch_event(uid, timestamp):
+    mongoConnection = get_connection()
+    mongoRepository = mongoConnection["tagTouchEvents"]
+
+    tag_touch_event = {
+        'tag_uid': uid,
+        'timestamp': timestamp,
+        'local': readerLocal
+    }
+
+    mongoRepository.insert_one(tag_touch_event)
+
+    print('Tag Touch Event Saved!')
+
 
 def main():
     while True:
         uid = tag_reader()
         publish_event(uid, str(datetime.datetime.now()), readerLocal)
+        save_tag_touch_event(uid, str(datetime.datetime.now()))
         time.sleep(.5)
 
 
